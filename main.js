@@ -58,6 +58,7 @@ function createWindow () {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  handleIPC()
   createWindow()
 
   app.on('activate', function () {
