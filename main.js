@@ -1,19 +1,54 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, ipcMain, Notification } = require('electron')
 const path = require('path')
+
+function handleIPC() {
+  ipcMain.handle('notification', async (e, {body, title, actions, closeButtonText}) => {
+      let res = await new Promise((resolve, reject) => {
+          console.log({
+              title,
+              body,
+              actions,
+              closeButtonText
+          })
+          let notification = new Notification({
+              title,
+              body,
+              actions,
+              closeButtonText
+          })
+          notification.show()
+          notification.on('action', function(event) {
+              resolve({event: 'action'})
+          })
+          notification.on('close', function(event) {
+              resolve({event: 'close'})
+          })
+      })
+      return res
+  })
+}
 
 function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 250,
+    height: 350,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      //  渲染进程 开启node模块，使得JS中可以使用node的model
+      nodeIntegration:true,
+      // 开启 remote 模块
+      enableBlinkFeatures:true,
+      // 控制上下文隔离
+      contextIsolation:false,
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration:true
     }
   })
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
+  mainWindow.webContents.openDevTools();
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
