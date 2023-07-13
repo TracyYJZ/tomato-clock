@@ -95,7 +95,6 @@ const workTimer = new Timer({
 });
 
 switchButton.onclick = function() {
-    console.log(111,this.innerText)
     if (this.innerText === '开始工作') {
         startWork()
     } else if(this.innerText === '开始休息'){
